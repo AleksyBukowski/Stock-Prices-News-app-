@@ -1,0 +1,5 @@
+finnhub-python
+pillow~=11.0.0
+plyer~=2.1.0
+sv-ttk
+requests~=2.32.3

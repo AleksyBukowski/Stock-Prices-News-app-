@@ -1009,7 +1009,7 @@ def fetch_at_specified_times(parent_element):
             Label(parent_element, text=f"Market status: {status['status'].title()}", foreground=color, font="Helvetica 13").pack()
 
     # Schedule the function to run again in 60 seconds
-    parent_element.after(60000, fetch_at_specified_times)
+    parent_element.after(60000, lambda: fetch_at_specified_times(parent_element))
 
 
 # Get the current market status
@@ -1525,8 +1525,8 @@ def fetch_prices(symbol):
     if prices['c'] == 0 and prices['d'] is None and prices['dp'] is None:
         return {"current_price": 0, "price_change": 0, "percent_change": 0}
     d = dict()
-    d["current_price"] = round(prices["c"], 2) if prices["c"] >= 1 else prices["c"]
-    d["price_change"] = round(prices["d"], 2) if prices["d"] >= 1 else prices["d"]
+    d["current_price"] = round(prices["c"], 2) if prices["c"] >= 1 else round(prices["c"], 4)
+    d["price_change"] = round(prices["d"], 2) if prices["d"] >= 1 else round(prices["d"], 4)
     d["percent_change"] = round(prices["dp"], 1)
     return d
 

@@ -1285,6 +1285,8 @@ def show_news(symbol):
         summary_label = ttk.Label(frame, text=summary, style="Summary.TLabel")
         summary_label.grid(row=1, column=1, sticky="ew", pady=5, padx=5)
 
+    # Press ESC to close window
+    news_window.bind("<Escape>", lambda e: news_window.destroy())
     # Set focus
     news_window.focus_set()
 
@@ -1301,6 +1303,7 @@ def get_news(symbol):
 ref = False  # Keeps track of refreshing stock list
 
 
+# Shows a window that lets users add stocks
 def show_add_stock_window(element):
     # Make sure refreshing is false by default
     global ref
@@ -1337,7 +1340,14 @@ def show_add_stock_window(element):
             w.focus_set()
         e.focus_set()
 
+    # Takes care of refreshing the stock list and closing the window
+    def on_close(event=None):
+        if ref:
+            refresh_frame(element.children["!frame3"])
+        w.destroy()
+
     w.bind("<Return>", submit)
+    w.bind("<Escape>", on_close)
 
     # Widgets
     l = ttk.Label(w, text="Enter stock symbol", font=("Helvetica", 14))
@@ -1346,12 +1356,6 @@ def show_add_stock_window(element):
     e.pack()
     submit_button = ttk.Button(w, text="Add", command=lambda: submit())
     submit_button.pack(pady=10)
-
-    # Takes care of refreshing the stock list and closing the window
-    def on_close():
-        if ref:
-            refresh_frame(element.children["!frame3"])
-        w.destroy()
 
     w.protocol("WM_DELETE_WINDOW", on_close)
 
@@ -1376,6 +1380,7 @@ def add_stock(symbol):
 ref2 = False  # Keeps track of refreshing stock list
 
 
+# Shows a window that lets users remove stocks from their list
 def show_remove_stock_window(element):
     # Make sure refreshing is false by default
     global ref2
@@ -1435,11 +1440,12 @@ def show_remove_stock_window(element):
     submit_button.pack(pady=10)
 
     # Refreshes list and closes window
-    def on_close():
+    def on_close(event=None):
         if ref2:
             refresh_frame(element.children["!frame3"])
         w.destroy()
 
+    w.bind("<Escape>", on_close)
     w.protocol("WM_DELETE_WINDOW", on_close)
 
     # Set focus and loop window

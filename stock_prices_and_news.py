@@ -1,8 +1,10 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from io import BytesIO
 import os
 from pathlib import Path
+import pytz
 import requests
+import time
 from tkinter import *
 from tkinter import ttk, messagebox
 import webbrowser
@@ -946,7 +948,7 @@ def show_buttons(parent_element):
     button2.grid(row=0, column=1, padx=10)
 
 
-# Show the current market status
+# Show the current market status and refresh at specified times
 def show_market_status(parent_element):
     market_status = ttk.Frame(parent_element, padding="0 5 0 0")
     market_status.pack()
@@ -965,6 +967,49 @@ def show_market_status(parent_element):
             if not status['is_open']:
                 color = "red"
     Label(parent_element, text=f"Market status: {status['status'].title()}", foreground=color, font="Helvetica 13").pack()
+
+    # Call the fetch_at_specified_times function initially
+    fetch_at_specified_times(market_status)
+
+
+# Fetch for market status at specified times
+def fetch_at_specified_times(parent_element):
+    # Get current time
+    timezone = pytz.timezone('Europe/Belgrade')
+    current_time = datetime.now(pytz.utc).astimezone(timezone)
+    epoch_time = current_time.timestamp()
+    current_time = time.localtime(epoch_time)
+    target_times = [(2, 1), (10, 1), (15, 31), (22, 1)]  # Specific target times (hour, minute)
+
+    # Check if current time matches any of the target times
+    for target_hour, target_minute in target_times:
+        if current_time.tm_hour == target_hour and current_time.tm_min == target_minute:
+            # Refresh market status display when the time matches
+            status = get_market_status()
+            color = "white"
+
+            match status["status"]:
+                case "pre-market":
+                    color = "blue"
+                case "regular":
+                    color = "green"
+                case "post-market":
+                    color = "purple"
+                case None:
+                    color = "red"
+                case _:
+                    if not status['is_open']:
+                        color = "red"
+
+            # Clear the existing label and display the new market status
+            for widget in parent_element.winfo_children():
+                if isinstance(widget, Label):
+                    widget.destroy()
+
+            Label(parent_element, text=f"Market status: {status['status'].title()}", foreground=color, font="Helvetica 13").pack()
+
+    # Schedule the function to run again in 60 seconds
+    parent_element.after(60000, fetch_at_specified_times)
 
 
 # Get the current market status

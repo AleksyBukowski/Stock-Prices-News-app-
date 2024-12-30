@@ -1,5 +1,7 @@
 finnhub-python
 pillow~=11.0.0
 plyer~=2.1.0
+pytz~=2024.2
 sv-ttk
 requests~=2.32.3
+future~=1.0.0
